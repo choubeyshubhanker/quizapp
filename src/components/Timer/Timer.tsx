@@ -47,7 +47,7 @@ const Timer = ({handleComplete,submitTest}:Props) => {
 
   useEffect(() => {
     const timeNow = new Date()
-    const target = (timeNow.getTime() +  30 * 1000)
+    const target = (timeNow.getTime() +  30 * 60 * 1000)
 
     const interval = setInterval(() => {
       const now = new Date();
