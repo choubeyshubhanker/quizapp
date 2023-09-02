@@ -1,21 +1,24 @@
 "use client"
 import Image from 'next/image'
-import {useDispatch} from "react-redux"
-import {logIn, logOut} from "@/reduxStore/features/auth-Slice";
+import {useDispatch, useSelector} from "react-redux"
 import { useAuth } from "@/context/AuthContext";
-import { AppDispatch } from '@/reduxStore/store';
+import { AppDispatch, useAppSelector } from '@/reduxStore/store';
 import React from 'react';
 import { DialogBox } from '@/components/Dialog/DialogBox';
 import Timer from '@/components/Timer/Timer';
+import { fetchQuesData } from '@/reduxStore/features/quesData';
 
 
 export default function Home() {
   const {user, googleSignIn, logOut, loading} = useAuth()
   const dispatch = useDispatch<AppDispatch>()
+  const state = useAppSelector((state)=> state?.quesData?.data)
   
+  // console.log("state  = ", state?.results)
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
+    dispatch(fetchQuesData())
       setOpen(true);
     };
     const handleClose = () => {

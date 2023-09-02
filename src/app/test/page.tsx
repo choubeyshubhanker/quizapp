@@ -1,151 +1,159 @@
-"use client"
-import React from 'react'
-import Timer from "@/components/Timer/Timer"
-import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepButton from '@mui/material/StepButton';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
+"use client";
+import React from "react";
+import Timer from "@/components/Timer/Timer";
+import Box from "@mui/material/Box";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepButton from "@mui/material/StepButton";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import { AppDispatch, useAppSelector } from "@/reduxStore/store";
+import { useDispatch, useSelector } from "react-redux";
+import { addAnswer } from "@/reduxStore/features/answerGiven";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from 'next/navigation';
 
-const steps = ['Select campaign settings', 'Create an ad group', 'Create an ad'];
 
 const Test = () => {
-    const [activeStep, setActiveStep] = React.useState(0);
-    const [completed, setCompleted] = React.useState<{
-      [k: number]: boolean;
-    }>({});
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [submitTest, setSubmitTest] = React.useState(false);
+  const [selectedAnswer, setSelectedAnswer] = React.useState("");
+  const [completed, setCompleted] = React.useState<{
+    [k: number]: boolean;
+  }>({});
 
-    const totalSteps = () => {
-        return steps.length;
-      };
-    
-      const completedSteps = () => {
-        return Object.keys(completed).length;
-      };
-    
-      const isLastStep = () => {
-        return activeStep === totalSteps() - 1;
-      };
-    
-      const allStepsCompleted = () => {
-        return completedSteps() === totalSteps();
-      };
-    
-      const handleNext = () => {
-        const newActiveStep =
-          isLastStep() && !allStepsCompleted()
-            ? // It's the last step, but not all steps have been completed,
-              // find the first step that has been completed
-              steps.findIndex((step, i) => !(i in completed))
-            : activeStep + 1;
-        setActiveStep(newActiveStep);
-      };
-    
-      const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-      };
-    
-      const handleStep = (step: number) => () => {
-        setActiveStep(step);
-      };
-    
-      const handleComplete = () => {
-        const newCompleted = completed;
-        newCompleted[activeStep] = true;
-        setCompleted(newCompleted);
-        handleNext();
-      };
-    
-      const handleReset = () => {
-        setActiveStep(0);
-        setCompleted({});
-      };
-    
+  const dispatch = useDispatch<AppDispatch>();
+  const state = useAppSelector((state) => state);
+  const { user } = useAuth();
+  const router = useRouter();
+  console.log("state questions ", state.answerGivenReducer);
+
+  const questions = useAppSelector((state) => state?.quesData?.data?.results);
+  console.log("questions ", questions);
+
+
+  const totalSteps = () => {
+    return questions.length;
+  };
+
+  const isLastStep = () => {
+    return activeStep === totalSteps() - 1;
+  };
+
+  const handleNext = (attempt: {
+    question: string;
+    correct_answer: string;
+  }) => {
+    const test = isLastStep();
+    console.log("isLastStep", test);
+    if (!test) {
+      setActiveStep((prev) => prev + 1);
+    }
+    dispatch(
+      addAnswer({
+        email: user?.email,
+        question: attempt.question,
+        selectedAnswer: selectedAnswer,
+        correctAnswer: attempt.correct_answer,
+      })
+    );
+    setSelectedAnswer("");
+  };
+
+  const handleStep = (step: number) => () => {
+    setActiveStep(step);
+  };
+
+  const handleComplete = () => {
+    const newCompleted = completed;
+    newCompleted[activeStep] = true;
+    setCompleted(newCompleted);
+    setSubmitTest(true)
+    setTimeout(() => {
+        router.push('/report');
+    }, 3000);
+  };
+  console.log("active == ", activeStep);
 
   return (
     <div>
-        <Timer/>
-        {/* Test Box */}
-        <Box sx={{ width: '100%' }}>
-      <Stepper nonLinear activeStep={activeStep}>
+      {submitTest?(<h1>Thank You!!</h1>):(
+        <>
+      <Timer />
       
-        {steps.map((label, index) => (
-          <Step key={label} completed={completed[index]}>
-            <StepButton color="inherit" onClick={handleStep(index)}>
-              {label}
-            </StepButton>
-          </Step>
-        ))}
-       
-      </Stepper>
-      <div>
-        {allStepsCompleted() ? (
+      <Box sx={{ width: "100%" }}>
+        <Stepper nonLinear activeStep={activeStep}>
+          {questions.map((ques: string, index: number) => (
+            <Step key={index} completed={completed[index]}>
+              <StepButton color="inherit" onClick={handleStep(index)}>
+                {index + 1}
+              </StepButton>
+            </Step>
+          ))}
+        </Stepper>
+        <div>
           <React.Fragment>
-            <Typography sx={{ mt: 2, mb: 1 }}>
-              All steps completed - you&apos;re finished
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-              <Box sx={{ flex: '1 1 auto' }} />
-              <Button onClick={handleReset}>Reset</Button>
-            </Box>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <Paper
-        square
-        elevation={0}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          height: 50,
-          pl: 2,
-          bgcolor: 'background.default',
-        }}
-      >
-            <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
-              Step {activeStep + 1}
-            </Typography>
-            </Paper>
-            <Box sx={{ height: 255, maxWidth: 400, width: '100%', p: 2 }}>
-        {"steps[activeStep].description"}
-      </Box>
-            <Box sx={{ display: 'flex', justifyContent:'space-around', flexDirection: 'row', pt: 2 }}>
-              {/* <Button
-                color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                sx={{ mr: 1 }}
+            <FormControl>
+              <Typography sx={{ mt: 2, mb: 1, p: 2 }}>
+                <FormLabel id="demo-row-radio-buttons-group-label">{`Ques ${
+                  activeStep + 1
+                }: ${questions[activeStep].question}`}</FormLabel>
+              </Typography>
+              <Box sx={{ height: 255, maxWidth: 400, width: "100%", p: 2 }}>
+                <RadioGroup
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  onChange={(e) => setSelectedAnswer(e.target.value)}
+                >
+                  {questions[activeStep].incorrect_answers.map(
+                    (ans: string, idx: number) => (
+                      <FormControlLabel
+                        key={ans}
+                        value={ans}
+                        control={<Radio />}
+                        label={ans}
+                      />
+                    )
+                  )}
+
+                  <FormControlLabel
+                    value={questions[activeStep].correct_answer}
+                    control={<Radio />}
+                    label={questions[activeStep].correct_answer}
+                  />
+                </RadioGroup>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                  flexDirection: "row",
+                  pt: 2,
+                }}
               >
-                Back
-              </Button> */}
-              <Button onClick={handleNext} sx={{ mr: 1 }}>
-                Submit Answer
-              </Button>
-              <Button onClick={handleComplete}> Submit Test </Button>
-              
-              {/* {activeStep !== steps.length &&
-                (completed[activeStep] ? (
-                  <Typography variant="caption" sx={{ display: 'inline-block' }}>
-                    Step {activeStep + 1} already completed
-                  </Typography>
-                ) : (
-                  <Button onClick={handleComplete}>
-                    {completedSteps() === totalSteps() - 1
-                      ? 'Finish'
-                      : 'Submit Test'}
-                  </Button>
-                ))} */}
-            </Box>
-                
+                <Button
+                  disabled={!selectedAnswer && true}
+                  onClick={() => handleNext(questions[activeStep])}
+                  sx={{ mr: 1 }}
+                >
+                  Submit Answer
+                </Button>
+                <Button onClick={handleComplete}> Submit Test </Button>
+              </Box>
+            </FormControl>
           </React.Fragment>
-        )}
-      </div>
-    </Box>
-
+        </div>
+      </Box>
+      </>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Test
+export default Test;
