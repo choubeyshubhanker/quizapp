@@ -66,7 +66,7 @@ const Timer = ({handleComplete}:Props) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [handleComplete]);
 
   return (
     <CircularProgressWithLabel value={progress} minutes={minutes} seconds={seconds}  />
