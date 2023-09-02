@@ -40,7 +40,7 @@ export const DialogBox = ({open, handleClose,email}:dialogProps) => {
           If you agree please enter your registered email for Confirmation.
         </DialogContentText>
         <Typography variant="caption" display="block" gutterBottom>
-        **You have to type it, copy paste won't work. 
+        You have to type it, copy paste no work. 
         Here is you registered email. {email}
       </Typography>
         <TextField
