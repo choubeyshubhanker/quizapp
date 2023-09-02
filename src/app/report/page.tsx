@@ -30,7 +30,7 @@ const rows = [
 
 const Report = () => {
   const state = useAppSelector((state) => state.answerGivenReducer);
-  console.log("state questions ", state);
+
 
   return (
     <TableContainer component={Paper}>
