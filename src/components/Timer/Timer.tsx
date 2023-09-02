@@ -36,10 +36,11 @@ function CircularProgressWithLabel(
 }
 
 interface Props{
-  handleComplete : ()=> void
+  handleComplete : ()=> void,
+  submitTest:boolean
 }
 
-const Timer = ({handleComplete}:Props) => {
+const Timer = ({handleComplete,submitTest}:Props) => {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [progress, setProgress] = React.useState(10);
@@ -66,7 +67,7 @@ const Timer = ({handleComplete}:Props) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [handleComplete]);
+  }, [submitTest]);
 
   return (
     <CircularProgressWithLabel value={progress} minutes={minutes} seconds={seconds}  />

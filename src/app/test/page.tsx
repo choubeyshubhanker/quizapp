@@ -140,7 +140,7 @@ const Test = () => {
                     >
                       Submit Answer
                     </Button>
-                    <Timer handleComplete={handleComplete} />
+                    <Timer handleComplete={handleComplete} submitTest={submitTest} />
                     <Button onClick={handleComplete}> Submit Test </Button>
                   </Box>
                 </FormControl>
