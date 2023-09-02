@@ -20,9 +20,10 @@ export const answerGiven = createSlice({
             console.log("state ", action.payload )
             state.push(action.payload);
           },
+          clearStore:()=> initialState
     },
    
     //
 });
-export const { addAnswer } = answerGiven.actions;
+export const { addAnswer,clearStore } = answerGiven.actions;
 export default answerGiven.reducer;

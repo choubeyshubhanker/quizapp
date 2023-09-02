@@ -52,10 +52,10 @@ export const DialogBox = ({open, handleClose,email}:dialogProps) => {
           fullWidth
           variant="standard"
           required
-          // onPaste={(e)=>{
-          //   e.preventDefault()
-          //   return false;
-          // }}
+          onPaste={(e)=>{
+            e.preventDefault()
+            return false;
+          }}
           autoComplete="off"
           onChange={(event:React.ChangeEvent<HTMLInputElement>)=>handleEmail(event)}
         />

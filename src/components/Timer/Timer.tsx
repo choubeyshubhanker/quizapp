@@ -35,21 +35,18 @@ function CircularProgressWithLabel(
   );
 }
 
+interface Props{
+  handleComplete : ()=> void
+}
 
-const Timer = () => {
-  const [partyTime, setPartyTime] = useState(false);
+const Timer = ({handleComplete}:Props) => {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [progress, setProgress] = React.useState(10);
 
-  
-
-      // const difference = target + now.getMinutes();
-
   useEffect(() => {
     const timeNow = new Date()
     const target = (timeNow.getTime() + 30 * 60 * 1000)
-    // const target = (timeNow.getTime() +   30 * 10000)
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -63,26 +60,16 @@ const Timer = () => {
       setSeconds(sec);
 
       if ( min <= 0 && sec <= 0) {
-        setPartyTime(true);
+        handleComplete();
         clearInterval(interval);
       }
     }, 1000);
-    // clearTimeout(wait)
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <CircularProgressWithLabel value={progress} minutes={minutes} seconds={seconds}  />
-    // <div>
-    //   <span className="time">{minutes}</span>
-    //   <span className="label">Minutes</span>
-
-    //   <span className="divider">:</span>
-
-    //   <span className="time">{seconds}</span>
-    //   <span className="label">Seconds</span>
-    // </div>
   );
 };
 
